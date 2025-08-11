@@ -1,10 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  trailingSlash: true,
+  reactStrictMode: true,
   images: {
-    unoptimized: true
-  }
-}
+    domains: ['images.unsplash.com'],
+  },
+  // Remove static export for Vercel deployment
+  // output: 'export',
+  // distDir: 'out',
+  // trailingSlash: true,
+  // images: {
+  //   unoptimized: true,
+  // },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

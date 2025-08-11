@@ -1,19 +1,24 @@
-import { Inter } from 'next/font/google'
-import './globals.css'
+'use client';
 
-const inter = Inter({ subsets: ['latin'] })
-
-export const metadata = {
-  title: 'Cycle Sync - Track Your Menstrual Cycle',
-  description: 'A women\'s health app for tracking menstrual cycles and receiving personalized recommendations',
-}
+import '../styles/globals.css';
+import { AuthProvider } from '../contexts/AuthContext';
+import { CycleProvider } from '../contexts/CycleContext';
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        {children}
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" />
+      </head>
+      <body suppressHydrationWarning>
+        <AuthProvider>
+          <CycleProvider>
+            {children}
+          </CycleProvider>
+        </AuthProvider>
       </body>
     </html>
-  )
+  );
 }
