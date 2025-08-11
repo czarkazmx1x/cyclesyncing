@@ -1,87 +1,75 @@
-# Cycle Sync Website
+# Cycle Syncing App
 
-A modern web application designed to help women track their menstrual cycles and receive personalized recommendations for nutrition, exercise, and lifestyle based on their cycle phase.
+A women's health application for tracking menstrual cycles and providing personalized recommendations based on cycle phases.
+
+![Cycle Syncing App](public/screenshot.png)
 
 ## Features
 
-- **Cycle Tracking**: Track period dates, symptoms, and more
-- **Phase-Based Recommendations**: Get personalized suggestions for each phase of your cycle
-- **Nutrition Guidance**: Food recommendations tailored to hormonal changes
-- **Exercise Recommendations**: Optimal workout types for each phase
-- **Self-Care Suggestions**: Lifestyle adjustments to support wellbeing
-
-## Tech Stack
-
-- **Framework**: Next.js 14
-- **Styling**: Tailwind CSS
-- **State Management**: React Hooks
-- **Deployment**: Vercel (recommended)
+- **Cycle Tracking**: Log period dates, symptoms, and mood
+- **Phase-Based Recommendations**: Get personalized nutrition, exercise, and self-care recommendations
+- **Insights Dashboard**: Visualize cycle patterns and health metrics
+- **AI-Powered Support**: Receive mood support and cycle insights powered by AI
+- **Educational Resources**: Access information about women's health and hormonal cycles
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ installed
+- Node.js (version 14 or higher)
 - npm or yarn
 
 ### Installation
 
 1. Clone the repository
-   ```
-   git clone <repository-url>
-   cd cycle-sync-website
+   ```bash
+   git clone https://github.com/czarkazmx1x/cyclesyncing.git
+   cd cyclesyncing
    ```
 
 2. Install dependencies
-   ```
+   ```bash
    npm install
    # or
    yarn install
    ```
 
-3. Run the development server
+3. Set up environment variables
+   Create a `.env.local` file with the following variables:
    ```
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+4. Run the development server
+   ```bash
    npm run dev
    # or
    yarn dev
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
-
 ## Project Structure
 
-- `app/` - Next.js app router pages
-- `components/` - Reusable React components
-- `public/` - Static assets
-- `styles/` - Global CSS and Tailwind configuration
+- `/app`: Next.js app directory (pages, layouts, routes)
+- `/components`: Reusable React components
+- `/contexts`: React context providers for state management
+- `/lib`: Utility functions and service integrations
+- `/public`: Static assets and images
+- `/styles`: CSS and Tailwind styling
+- `/docs`: Project documentation
+
+## Technologies Used
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Supabase
 
 ## Deployment
 
-This website can be easily deployed to Vercel:
-
-1. Push your code to a GitHub repository
-2. Sign up for a Vercel account at [vercel.com](https://vercel.com)
-3. Create a new project and import your GitHub repository
-4. Deploy with a single click
-
-## Future Enhancements
-
-- User authentication and profile management
-- Calendar view for cycle tracking
-- AI-powered insights and pattern recognition
-- Community features and expert content
-- Integration with health tracking devices
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgements
-
-- Design inspiration from [various women's health apps]
-- Icons from [Heroicons](https://heroicons.com/)
-- Color palette based on cycle phases research
+[MIT](LICENSE)
