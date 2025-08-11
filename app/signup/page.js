@@ -28,6 +28,8 @@ export default function SignUp() {
       return;
     }
 
+    console.log('Attempting signup with:', { email: formData.email, name: formData.name });
+
     try {
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
@@ -39,13 +41,17 @@ export default function SignUp() {
         }
       });
 
+      console.log('Signup response:', { data, error });
+
       if (error) {
-        setMessage(error.message);
+        console.error('Signup error:', error);
+        setMessage(`Signup failed: ${error.message}`);
       } else {
         setMessage('Account created! Please check your email to confirm your account.');
       }
     } catch (error) {
-      setMessage('An error occurred. Please try again.');
+      console.error('Network error:', error);
+      setMessage(`Network error: ${error.message || 'Unable to connect to authentication service'}`);
     }
 
     setLoading(false);
