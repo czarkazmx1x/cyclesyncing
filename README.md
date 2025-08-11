@@ -1,6 +1,6 @@
 # Women's Health Cycle Sync App
 
-A comprehensive health application for women to track their menstrual cycles and receive personalized recommendations for nutrition, exercise, and lifestyle based on their cycle phase.
+A comprehensive web application for women to track their menstrual cycles and receive personalized recommendations for nutrition, exercise, and lifestyle based on their cycle phase.
 
 ## Features
 
