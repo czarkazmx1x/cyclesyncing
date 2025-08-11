@@ -1,0 +1,208 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String   @id @default(uuid())
+  email              String   @unique
+  password           String
+  firstName          String?
+  lastName           String?
+  dateOfBirth        DateTime?
+  height             Float?
+  weight             Float?
+  privacyPreferences Json?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  // Relationships
+  cycles       Cycle[]
+  symptoms     Symptom[]
+  preferences  UserPreference?
+  notifications Notification[]
+}
+
+model UserPreference {
+  id                      String   @id @default(uuid())
+  userId                  String   @unique
+  averageCycleLength      Int      @default(28)
+  averagePeriodLength     Int      @default(5)
+  notificationsEnabled    Boolean  @default(true)
+  periodRemindersEnabled  Boolean  @default(true)
+  fertilityAlertsEnabled  Boolean  @default(true)
+  dataExportEnabled       Boolean  @default(true)
+  theme                   String   @default("light")
+  language                String   @default("en")
+  measurementUnit         String   @default("metric")
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  // Relationships
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Cycle {
+  id            String   @id @default(uuid())
+  userId        String
+  startDate     DateTime
+  endDate       DateTime?
+  periodLength  Int?
+  cycleLength   Int?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relationships
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  days     CycleDay[]
+}
+
+model CycleDay {
+  id            String   @id @default(uuid())
+  cycleId       String
+  date          DateTime
+  phase         CyclePhase
+  flowIntensity FlowIntensity?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relationships
+  cycle    Cycle     @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  symptoms DaySymptom[]
+  moods    DayMood[]
+}
+
+model Symptom {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  category    SymptomCategory
+  icon        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  daySymptoms DaySymptom[]
+}
+
+model DaySymptom {
+  id          String   @id @default(uuid())
+  cycleDayId  String
+  symptomId   String
+  intensity   Int      @default(1) // 1-5 scale
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  cycleDay    CycleDay @relation(fields: [cycleDayId], references: [id], onDelete: Cascade)
+  symptom     Symptom  @relation(fields: [symptomId], references: [id], onDelete: Cascade)
+}
+
+model Mood {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  icon        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  dayMoods    DayMood[]
+}
+
+model DayMood {
+  id          String   @id @default(uuid())
+  cycleDayId  String
+  moodId      String
+  intensity   Int      @default(1) // 1-5 scale
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  cycleDay    CycleDay @relation(fields: [cycleDayId], references: [id], onDelete: Cascade)
+  mood        Mood     @relation(fields: [moodId], references: [id], onDelete: Cascade)
+}
+
+model Recommendation {
+  id            String            @id @default(uuid())
+  type          RecommendationType
+  phase         CyclePhase
+  title         String
+  description   String
+  tips          String[]
+  imageUrl      String?
+  source        String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+}
+
+model Notification {
+  id            String            @id @default(uuid())
+  userId        String
+  title         String
+  message       String
+  type          NotificationType
+  isRead        Boolean           @default(false)
+  scheduledFor  DateTime
+  sentAt        DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  // Relationships
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum CyclePhase {
+  MENSTRUAL
+  FOLLICULAR
+  OVULATORY
+  LUTEAL
+}
+
+enum FlowIntensity {
+  NONE
+  SPOTTING
+  LIGHT
+  MEDIUM
+  HEAVY
+}
+
+enum SymptomCategory {
+  PHYSICAL
+  EMOTIONAL
+  SLEEP
+  DIGESTION
+  ENERGY
+  SKIN
+  HAIR
+  SEXUAL
+  OTHER
+}
+
+enum RecommendationType {
+  NUTRITION
+  EXERCISE
+  SELFCARE
+  SLEEP
+  PRODUCTIVITY
+  SOCIAL
+}
+
+enum NotificationType {
+  PERIOD_REMINDER
+  FERTILITY_ALERT
+  OVULATION_REMINDER
+  SYMPTOM_REMINDER
+  GENERAL
+}
