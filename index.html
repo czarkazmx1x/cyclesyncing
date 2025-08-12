@@ -4,54 +4,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CycleSync App</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #fce7f3 0%, #e9d5ff 100%);
-            color: #333;
+            min-height: 100vh;
         }
-        .container {
-            text-align: center;
-            padding: 2rem;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-        }
-        h1 {
-            color: #ec4899;
-            margin-bottom: 1rem;
-        }
-        p {
-            margin-bottom: 2rem;
-        }
-        .btn {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
+        .btn-primary {
             background: linear-gradient(to right, #f472b6, #ec4899);
             color: white;
+            padding: 0.75rem 1.5rem;
             border-radius: 9999px;
-            text-decoration: none;
             font-weight: 500;
+            transition: transform 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
             box-shadow: 0 4px 6px rgba(236, 72, 153, 0.3);
-            transition: transform 0.3s;
         }
-        .btn:hover {
+        .btn-primary:hover {
             transform: scale(1.05);
+        }
+        .btn-secondary {
+            background: white;
+            color: #ec4899;
+            border: 2px solid #fbcfe8;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+        .btn-secondary:hover {
+            background: #fdf2f8;
+            border-color: #f9a8d4;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>CycleSync App</h1>
-        <p>Your women's health companion - Embracing your natural rhythm.</p>
-        <a href="/dashboard" class="btn">Start Your Journey</a>
+    <div class="min-h-screen flex flex-col">
+        <nav class="bg-white shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <div class="text-2xl font-bold text-pink-500">CycleSync</div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <a href="/login" class="text-gray-700 hover:text-pink-500 transition-colors">Login</a>
+                        <a href="/signup" class="btn-primary">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="flex-grow">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+                <div class="text-center">
+                    <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                        <span class="bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-500">Embrace Your</span>
+                        <br />
+                        <span class="text-gray-800">Natural Rhythm</span>
+                    </h1>
+                    
+                    <p class="text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+                        Discover the power of cycle syncing. Get personalized wellness recommendations 
+                        that honor your body's natural phases and help you thrive every day of the month.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="/dashboard" class="btn-primary">
+                            Start Your Journey
+                            <span class="ml-2">✨</span>
+                        </a>
+                        <a href="/login" class="btn-secondary">
+                            Learn More
+                            <span class="ml-2">💕</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="bg-white py-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center">
+                    <div class="text-gray-500">© 2025 CycleSync. All rights reserved.</div>
+                    <div>
+                        <a href="/about" class="text-gray-500 hover:text-pink-500 mr-4">About</a>
+                        <a href="/privacy" class="text-gray-500 hover:text-pink-500">Privacy</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div>
 </body>
 </html>
