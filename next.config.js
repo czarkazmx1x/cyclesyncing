@@ -3,14 +3,10 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     domains: ['images.unsplash.com'],
+    unoptimized: true,
   },
-  // Remove static export for Vercel deployment
-  // output: 'export',
-  // distDir: 'out',
-  // trailingSlash: true,
-  // images: {
-  //   unoptimized: true,
-  // },
-};
-
-module.exports = nextConfig;
+  // Configure for Cloudflare Pages
+  output: 'export',
+  distDir: 'out',
+  trailingSlash: true,
+}
