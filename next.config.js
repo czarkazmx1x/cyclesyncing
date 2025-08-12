@@ -7,6 +7,5 @@ const nextConfig = {
   },
   // Configure for Cloudflare Pages
   output: 'export',
-  // Do not set a custom distDir - let Next.js use its default '.next'
-  trailingSlash: true,
+  distDir: '.next'
 }
