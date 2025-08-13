@@ -39,7 +39,7 @@ export default function HeroSection() {
               Start Your Journey
               <span className="ml-2">✨</span>
             </Link>
-            <Link href="/login" className="btn btn-secondary text-lg px-8 py-4">
+            <Link href="/about" className="btn btn-secondary text-lg px-8 py-4">
               Learn More
               <span className="ml-2">💕</span>
             </Link>
