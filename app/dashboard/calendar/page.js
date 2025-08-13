@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import DashboardLayout from '../../../components/DashboardLayout';
 import DayModal from '../../../components/DayModal';
+import DataDebugPanel from '../../../components/DataDebugPanel';
 import { useCycle } from '../../../contexts/CycleContext';
 
 // Force this page to be dynamic
@@ -121,6 +122,9 @@ export default function Calendar() {
       <div className="py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-2xl font-semibold text-gray-900 mb-6">Cycle Calendar</h1>
+
+          {/* Debug Panel - Remove this after testing */}
+          <DataDebugPanel />
 
           {/* Calendar Navigation */}
           <div className="bg-white rounded-lg shadow-sm p-4 mb-6">

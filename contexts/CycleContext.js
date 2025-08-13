@@ -133,46 +133,78 @@ export function CycleProvider({ children }) {
 
   // Log new symptom to Supabase
   const logSymptom = async (symptom) => {
-    if (!user) return;
+    if (!user) {
+      console.log('No user logged in, cannot save symptom');
+      return;
+    }
     
     try {
+      console.log('Saving symptom:', symptom);
+      
+      // Convert severity from 1-5 scale to 1-3 scale for database
+      const severityConverted = Math.min(3, Math.ceil((symptom.severity || 3) * 3 / 5));
+      
       const { data, error } = await supabase
         .from('symptoms')
         .insert({
           user_id: user.id,
+          date: symptom.date ? new Date(symptom.date).toISOString() : new Date().toISOString(),
           type: symptom.type,
-          severity: symptom.severity,
-          notes: symptom.notes,
-          cycle_day: cycleData.currentDay
+          severity: severityConverted,
+          notes: symptom.notes || '',
+          cycle_day: cycleData.currentDay || 1
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      console.log('Symptom saved successfully:', data);
       setSymptoms([data, ...symptoms]);
     } catch (error) {
       console.error('Error logging symptom:', error);
+      alert('Failed to save symptom. Please try again.');
     }
   };
 
   // Log mood to Supabase
   const logMood = async (mood) => {
-    if (!user) return;
+    if (!user) {
+      console.log('No user logged in, cannot save mood');
+      return;
+    }
     
     try {
+      console.log('Saving mood:', mood);
+      
       const { data, error } = await supabase
         .from('moods')
         .insert({
           user_id: user.id,
+          date: mood.date ? new Date(mood.date).toISOString() : new Date().toISOString(),
           mood: mood.mood,
-          energy: mood.energy,
-          notes: mood.notes,
-          cycle_day: cycleData.currentDay
+          energy: mood.energy || 3,
+          notes: mood.notes || '',
+          cycle_day: cycleData.currentDay || 1
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      console.log('Mood saved successfully:', data);
+      setMoods([data, ...moods]);
+    } catch (error) {
+      console.error('Error logging mood:', error);
+      alert('Failed to save mood. Please try again.');
+    }
+  };
       setMoods([data, ...moods]);
     } catch (error) {
       console.error('Error logging mood:', error);
