@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '../../contexts/AuthContext'
 
-// Simple auth page with better error handling
 export default function AuthPage() {
   const [isSignUp, setIsSignUp] = useState(false)
   const [email, setEmail] = useState('')
@@ -15,10 +15,13 @@ export default function AuthPage() {
   const [error, setError] = useState('')
   
   const router = useRouter()
+  const { signIn, signUp, user } = useAuth()
 
-  // Check if Supabase is configured
-  const isSupabaseConfigured = process.env.NEXT_PUBLIC_SUPABASE_URL && 
-                               process.env.NEXT_PUBLIC_SUPABASE_URL !== 'your_supabase_project_url_here'
+  // Redirect if already logged in
+  if (user) {
+    router.push('/dashboard')
+    return null
+  }
 
   const handleAuth = async (e) => {
     e.preventDefault()
@@ -26,36 +29,14 @@ export default function AuthPage() {
     setError('')
     setMessage('')
 
-    if (!isSupabaseConfigured) {
-      setError('Supabase is not configured yet. Please add your Supabase URL and API key to the environment variables.')
-      setLoading(false)
-      return
-    }
-
     try {
-      // Dynamically import supabase to avoid initialization errors
-      const { createClient } = await import('../../lib/supabase')
-      const supabase = createClient()
-
       if (isSignUp) {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              first_name: firstName,
-              last_name: lastName,
-            }
-          }
-        })
+        const { error } = await signUp(email, password, firstName, lastName)
         
         if (error) throw error
         setMessage('Check your email for the confirmation link!')
       } else {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        })
+        const { error } = await signIn(email, password)
         
         if (error) throw error
         router.push('/dashboard')
@@ -88,17 +69,6 @@ export default function AuthPage() {
             </button>
           </p>
         </div>
-
-        {!isSupabaseConfigured && (
-          <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded">
-            <p className="font-medium">Setup Required</p>
-            <p className="text-sm mt-1">
-              To enable authentication, please:
-              <br />1. Create a Supabase project at supabase.com
-              <br />2. Add your Supabase URL and API key to .env.local
-            </p>
-          </div>
-        )}
 
         <form className="mt-8 space-y-6" onSubmit={handleAuth}>
           <div className="space-y-4">
@@ -181,7 +151,7 @@ export default function AuthPage() {
           <div>
             <button
               type="submit"
-              disabled={loading || !isSupabaseConfigured}
+              disabled={loading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Loading...' : (isSignUp ? 'Create account' : 'Sign in')}

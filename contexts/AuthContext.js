@@ -16,10 +16,20 @@ export function AuthProvider({ children }) {
   const [supabase, setSupabase] = useState(null);
   const router = useRouter();
 
-  // Initialize Supabase client
+  // Initialize Supabase client safely
   useEffect(() => {
     const initializeSupabase = async () => {
       try {
+        // Check if environment variables are set
+        const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+        
+        if (!url || !key || url === 'your_supabase_project_url_here') {
+          console.log('Supabase not configured - auth disabled');
+          setLoading(false);
+          return;
+        }
+
         const { createClient } = await import('../lib/supabase');
         const client = createClient();
         setSupabase(client);
@@ -44,7 +54,7 @@ export function AuthProvider({ children }) {
 
         return () => subscription.unsubscribe();
       } catch (error) {
-        console.error('Failed to initialize Supabase:', error);
+        console.log('Supabase initialization failed:', error.message);
         setLoading(false);
       }
     };
@@ -87,20 +97,22 @@ export function AuthProvider({ children }) {
   };
 
   // Sign up
-  const signUp = async (email, password, name) => {
-    if (!supabase) return { data: null, error: { message: 'Supabase not initialized' } };
+  const signUp = async (email, password, firstName, lastName) => {
+    if (!supabase) return { data: null, error: { message: 'Authentication not available' } };
     
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { name }
+          data: { 
+            first_name: firstName,
+            last_name: lastName 
+          }
         }
       });
 
       if (error) throw error;
-
       return { data, error: null };
     } catch (error) {
       return { data: null, error };
@@ -109,7 +121,7 @@ export function AuthProvider({ children }) {
 
   // Sign in
   const signIn = async (email, password) => {
-    if (!supabase) return { data: null, error: { message: 'Supabase not initialized' } };
+    if (!supabase) return { data: null, error: { message: 'Authentication not available' } };
     
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -118,7 +130,6 @@ export function AuthProvider({ children }) {
       });
 
       if (error) throw error;
-
       return { data, error: null };
     } catch (error) {
       return { data: null, error };
@@ -140,7 +151,7 @@ export function AuthProvider({ children }) {
 
   // Update profile
   const updateProfile = async (updates) => {
-    if (!supabase) return { data: null, error: { message: 'Supabase not initialized' } };
+    if (!supabase) return { data: null, error: { message: 'Authentication not available' } };
     
     try {
       const { data, error } = await supabase

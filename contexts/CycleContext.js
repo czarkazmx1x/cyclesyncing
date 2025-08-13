@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
 import { useAuth } from './AuthContext';
 
 const CycleContext = createContext();
@@ -11,7 +10,7 @@ export function useCycle() {
 }
 
 export function CycleProvider({ children }) {
-  const { user, profile } = useAuth();
+  const { user, profile, supabase } = useAuth();
   
   // Cycle Data
   const [cycleData, setCycleData] = useState({
