@@ -5,6 +5,7 @@ import DashboardLayout from '../../../components/DashboardLayout';
 import { useCycle } from '../../../contexts/CycleContext';
 import AIRecommendationEngine from '../../../components/ai/AIRecommendationEngine';
 import AIRecommendationCard from '../../../components/ai/AIRecommendationCard';
+import MonthlyDataSummary from '../../../components/MonthlyDataSummary';
 import { 
   FiActivity, 
   FiHeart,
@@ -16,10 +17,11 @@ import {
 } from 'react-icons/fi';
 
 export default function Recommendations() {
-  const { cycleData } = useCycle();
+  const { cycleData, symptoms, moods } = useCycle();
   const [activeCategory, setActiveCategory] = useState('all');
   const [aiRecommendations, setAiRecommendations] = useState([]);
   const [savedRecommendations, setSavedRecommendations] = useState([]);
+  const [dayNotes, setDayNotes] = useState([]); // Would come from context in real app
 
   // Handle new AI recommendation
   const handleNewAIRecommendation = (recommendation) => {
@@ -206,6 +208,15 @@ export default function Recommendations() {
             </h1>
             <p className="text-gray-600">Based on your {cycleData.currentPhase} phase</p>
           </div>
+
+          {/* Monthly Data Summary */}
+          <MonthlyDataSummary
+            symptoms={symptoms || []}
+            moods={moods || []}
+            notes={dayNotes}
+            currentMonth={new Date()}
+            aiRecommendations={aiRecommendations}
+          />
 
           {/* AI Recommendation Engine */}
           <AIRecommendationEngine 

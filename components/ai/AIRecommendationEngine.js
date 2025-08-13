@@ -287,7 +287,7 @@ Focus on evidence-based, practical advice that addresses their specific concerns
         
         <p className="text-gray-600 mb-4">
           Tell me how you're feeling today, what symptoms you're experiencing, or what you need help with. 
-          I'll create personalized recommendations just for you.
+          I'll create personalized recommendations just for you based on your cycle phase and monthly tracking patterns.
         </p>
         
         <form onSubmit={handleSubmit} className="space-y-4">
