@@ -37,7 +37,8 @@ export default function SignUp() {
         options: {
           data: {
             name: formData.name,
-          }
+          },
+          emailRedirectTo: `${window.location.origin}/dashboard`
         }
       });
 
@@ -46,8 +47,15 @@ export default function SignUp() {
       if (error) {
         console.error('Signup error:', error);
         setMessage(`Signup failed: ${error.message}`);
-      } else {
+      } else if (data.user && !data.user.email_confirmed_at) {
         setMessage('Account created! Please check your email to confirm your account.');
+      } else if (data.user && data.user.email_confirmed_at) {
+        setMessage('Account created and confirmed! Redirecting to dashboard...');
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 2000);
+      } else {
+        setMessage('Account created successfully!');
       }
     } catch (error) {
       console.error('Network error:', error);
