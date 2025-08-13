@@ -205,11 +205,6 @@ export function CycleProvider({ children }) {
       alert('Failed to save mood. Please try again.');
     }
   };
-      setMoods([data, ...moods]);
-    } catch (error) {
-      console.error('Error logging mood:', error);
-    }
-  };
 
   // Delete symptom
   const deleteSymptom = async (id) => {
