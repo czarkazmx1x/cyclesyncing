@@ -147,11 +147,10 @@ export function CycleProvider({ children }) {
         .from('symptoms')
         .insert({
           user_id: user.id,
-          date: symptom.date ? new Date(symptom.date).toISOString() : new Date().toISOString(),
+          date: symptom.date ? new Date(symptom.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
           type: symptom.type,
-          severity: severityConverted,
-          notes: symptom.notes || '',
-          cycle_day: cycleData.currentDay || 1
+          intensity: severityConverted,
+          notes: symptom.notes || ''
         })
         .select()
         .single();
@@ -183,11 +182,10 @@ export function CycleProvider({ children }) {
         .from('moods')
         .insert({
           user_id: user.id,
-          date: mood.date ? new Date(mood.date).toISOString() : new Date().toISOString(),
+          date: mood.date ? new Date(mood.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
           mood: mood.mood,
-          energy: mood.energy || 3,
-          notes: mood.notes || '',
-          cycle_day: cycleData.currentDay || 1
+          intensity: mood.energy || 3,
+          notes: mood.notes || ''
         })
         .select()
         .single();
