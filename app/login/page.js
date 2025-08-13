@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '../../lib/supabase'
 import { useRouter } from 'next/navigation'
 
+// Simple auth page with better error handling
 export default function AuthPage() {
   const [isSignUp, setIsSignUp] = useState(false)
   const [email, setEmail] = useState('')
@@ -15,7 +15,10 @@ export default function AuthPage() {
   const [error, setError] = useState('')
   
   const router = useRouter()
-  const supabase = createClient()
+
+  // Check if Supabase is configured
+  const isSupabaseConfigured = process.env.NEXT_PUBLIC_SUPABASE_URL && 
+                               process.env.NEXT_PUBLIC_SUPABASE_URL !== 'your_supabase_project_url_here'
 
   const handleAuth = async (e) => {
     e.preventDefault()
@@ -23,7 +26,17 @@ export default function AuthPage() {
     setError('')
     setMessage('')
 
+    if (!isSupabaseConfigured) {
+      setError('Supabase is not configured yet. Please add your Supabase URL and API key to the environment variables.')
+      setLoading(false)
+      return
+    }
+
     try {
+      // Dynamically import supabase to avoid initialization errors
+      const { createClient } = await import('../../lib/supabase')
+      const supabase = createClient()
+
       if (isSignUp) {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -48,7 +61,7 @@ export default function AuthPage() {
         router.push('/dashboard')
       }
     } catch (error) {
-      setError(error.message)
+      setError(error.message || 'An error occurred during authentication')
     } finally {
       setLoading(false)
     }
@@ -75,6 +88,17 @@ export default function AuthPage() {
             </button>
           </p>
         </div>
+
+        {!isSupabaseConfigured && (
+          <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded">
+            <p className="font-medium">Setup Required</p>
+            <p className="text-sm mt-1">
+              To enable authentication, please:
+              <br />1. Create a Supabase project at supabase.com
+              <br />2. Add your Supabase URL and API key to .env.local
+            </p>
+          </div>
+        )}
 
         <form className="mt-8 space-y-6" onSubmit={handleAuth}>
           <div className="space-y-4">
@@ -157,7 +181,7 @@ export default function AuthPage() {
           <div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !isSupabaseConfigured}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Loading...' : (isSignUp ? 'Create account' : 'Sign in')}
