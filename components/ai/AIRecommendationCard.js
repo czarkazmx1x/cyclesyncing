@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FiSparkles, FiBrain, FiClock, FiUser } from 'react-icons/fi';
+import { FiStar, FiCpu, FiClock, FiUser } from 'react-icons/fi';
 
 export default function AIRecommendationCard({ recommendation, onDismiss, onSave }) {
   const [isSaved, setIsSaved] = useState(false);
@@ -38,7 +38,7 @@ export default function AIRecommendationCard({ recommendation, onDismiss, onSave
             <div className="flex items-center space-x-2">
               <h3 className="text-lg font-semibold text-gray-900">{recommendation.title}</h3>
               <div className="flex items-center space-x-1">
-                <FiSparkles className="w-4 h-4 text-purple-500" />
+                <FiStar className="w-4 h-4 text-purple-500" />
                 <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">
                   AI Generated
                 </span>
@@ -79,7 +79,7 @@ export default function AIRecommendationCard({ recommendation, onDismiss, onSave
       
       <div className="space-y-2 mb-4">
         <h4 className="text-sm font-medium text-gray-700 flex items-center space-x-1">
-          <FiBrain className="w-4 h-4" />
+          <FiCpu className="w-4 h-4" />
           <span>AI-Tailored Tips:</span>
         </h4>
         <ul className="space-y-1">

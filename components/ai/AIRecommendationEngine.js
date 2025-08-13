@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FiMessageCircle, FiSend, FiSparkles, FiUser, FiCalendar, FiActivity } from 'react-icons/fi';
+import { FiMessageCircle, FiSend, FiStar, FiUser, FiCalendar, FiActivity } from 'react-icons/fi';
 
 export default function AIRecommendationEngine({ currentPhase, onNewRecommendation }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -234,7 +234,7 @@ export default function AIRecommendationEngine({ currentPhase, onNewRecommendati
       {/* AI Input Section */}
       <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6 border border-purple-100">
         <div className="flex items-center space-x-2 mb-4">
-          <FiSparkles className="text-purple-600" />
+          <FiStar className="text-purple-600" />
           <h3 className="text-lg font-semibold text-gray-900">
             AI-Powered Personal Recommendations
           </h3>

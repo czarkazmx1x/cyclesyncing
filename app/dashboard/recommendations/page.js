@@ -12,7 +12,7 @@ import {
   FiMoon,
   FiBook,
   FiShoppingBag,
-  FiSparkles
+  FiStar
 } from 'react-icons/fi';
 
 export default function Recommendations() {
@@ -217,7 +217,7 @@ export default function Recommendations() {
           {aiRecommendations.length > 0 && (
             <div className="mb-8">
               <div className="flex items-center space-x-2 mb-4">
-                <FiSparkles className="text-purple-600" />
+                <FiStar className="text-purple-600" />
                 <h2 className="text-xl font-semibold text-gray-900">Your AI Recommendations</h2>
                 <span className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full">
                   {aiRecommendations.length} new
