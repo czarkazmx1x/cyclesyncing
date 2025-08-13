@@ -19,7 +19,7 @@ import {
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths } from 'date-fns';
 
 export default function Calendar() {
-  const { userProfile, cycleData, symptoms, moods, addSymptom, addMood } = useCycle();
+  const { userProfile, cycleData, symptoms, moods, logSymptom, logMood } = useCycle();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -62,6 +62,29 @@ export default function Calendar() {
   // Handle adding a note
   const handleAddNote = (noteData) => {
     setDayNotes(prev => [...prev, noteData]);
+  };
+
+  // Adapter functions to match context expectations
+  const handleAddSymptom = (symptomData) => {
+    // Convert DayModal format to context format
+    const adaptedSymptom = {
+      type: symptomData.symptom,
+      severity: symptomData.intensity,
+      notes: `Logged on ${format(symptomData.date, 'MMM dd, yyyy')}`,
+      date: symptomData.date
+    };
+    logSymptom(adaptedSymptom);
+  };
+
+  const handleAddMood = (moodData) => {
+    // Convert DayModal format to context format
+    const adaptedMood = {
+      mood: moodData.mood,
+      energy: 5, // Default energy level
+      notes: `Logged on ${format(moodData.date, 'MMM dd, yyyy')}`,
+      date: moodData.date
+    };
+    logMood(adaptedMood);
   };
 
   // Handle deleting events
@@ -258,8 +281,8 @@ export default function Calendar() {
           selectedDate={selectedDate}
           phase={selectedDate ? getPhaseForDay(selectedDate) : 'follicular'}
           events={selectedDate ? getDayEvents(selectedDate) : {}}
-          onAddSymptom={addSymptom}
-          onAddMood={addMood}
+          onAddSymptom={handleAddSymptom}
+          onAddMood={handleAddMood}
           onAddNote={handleAddNote}
           onDeleteEvent={handleDeleteEvent}
         />
