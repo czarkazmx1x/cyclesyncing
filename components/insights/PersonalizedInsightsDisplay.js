@@ -3,14 +3,14 @@ import { format } from 'date-fns';
 import { 
   FiTrendingUp, 
   FiTrendingDown, 
-  FiBrain, 
+  FiCpu, 
   FiHeart, 
   FiCalendar,
   FiActivity,
   FiStar,
   FiTarget,
-  FiLightbulb,
-  FiBarChart3,
+  FiSun,
+  FiBarChart,
   FiRefreshCw
 } from 'react-icons/fi';
 
@@ -36,8 +36,8 @@ export default function PersonalizedInsightsDisplay({
   if (!insights) {
     return (
       <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="text-center py-8">
-          <FiBrain className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+        <div className="flex items-center justify-center py-8">
+          <FiCpu className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <p className="text-gray-600 mb-4">Start tracking to get personalized insights</p>
           <p className="text-sm text-gray-500">
             Log symptoms, moods, and notes to see AI-powered recommendations
@@ -85,7 +85,7 @@ export default function PersonalizedInsightsDisplay({
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <FiBrain className="w-6 h-6 text-purple-600" />
+            <FiCpu className="w-6 h-6 text-purple-600" />
             <div>
               <h2 className="text-xl font-semibold text-gray-900">
                 Your Personalized Insights
@@ -108,7 +108,7 @@ export default function PersonalizedInsightsDisplay({
       {/* Tabs */}
       <div className="flex border-b">
         {[
-          { id: 'overview', label: 'Overview', icon: FiBarChart3 },
+          { id: 'overview', label: 'Overview', icon: FiBarChart },
           { id: 'recommendations', label: 'Recommendations', icon: FiTarget },
           { id: 'patterns', label: 'Patterns', icon: FiTrendingUp },
           { id: 'phases', label: 'Phase Insights', icon: FiCalendar }
@@ -138,7 +138,7 @@ export default function PersonalizedInsightsDisplay({
             {/* Key Insight */}
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-lg border border-purple-100">
               <div className="flex items-start space-x-3">
-                <FiLightbulb className="w-6 h-6 text-purple-600 mt-1" />
+                <FiSun className="w-6 h-6 text-purple-600 mt-1" />
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-2">Key Insight</h3>
                   <p className="text-gray-700">

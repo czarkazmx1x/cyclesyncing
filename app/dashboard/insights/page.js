@@ -14,7 +14,7 @@ import {
   FiTarget,
   FiClock,
   FiZap,
-  FiBrain,
+  FiCpu,
   FiChevronLeft,
   FiChevronRight
 } from 'react-icons/fi';
@@ -157,7 +157,7 @@ export default function InsightsPage() {
 
         {!cycleData ? (
           <div className="text-center py-12">
-            <FiBrain className="mx-auto text-4xl text-gray-400 mb-4" />
+            <FiCpu className="mx-auto text-4xl text-gray-400 mb-4" />
             <p className="text-gray-600">Start tracking your cycle to see insights</p>
             <p className="text-sm text-gray-500 mt-2">
               Log symptoms, moods, and notes to get AI-powered personalized recommendations

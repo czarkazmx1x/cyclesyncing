@@ -431,9 +431,5 @@ Make recommendations specific to their symptoms, mood patterns, and cycle phases
     return Math.round((symptomScore + moodScore) / 2);
   };
 
-  return {
-    isAnalyzing,
-    insights,
-    generatePersonalizedInsights
-  };
+  return null; // This component only provides data, doesn't render anything
 }
