@@ -1,8 +1,10 @@
 import { useCycle } from '../contexts/CycleContext';
+import { useAuth } from '../contexts/AuthContext';
 import { format } from 'date-fns';
 
 export default function DataDebugPanel() {
   const { symptoms, moods, loading } = useCycle();
+  const { user } = useAuth();
 
   if (loading) {
     return (
@@ -16,6 +18,22 @@ export default function DataDebugPanel() {
   return (
     <div className="bg-gray-100 p-4 rounded-lg mb-4">
       <h3 className="font-bold text-gray-800 mb-2">🔍 Data Debug Panel</h3>
+      
+      {/* User Status */}
+      <div className="mb-4 p-3 bg-white rounded border">
+        <h4 className="font-semibold text-gray-700 mb-1">User Status</h4>
+        {user ? (
+          <div className="text-sm text-green-600">
+            ✅ Logged in as: {user.email}
+          </div>
+        ) : (
+          <div className="text-sm text-red-600">
+            ❌ Not logged in - this is why symptoms can't be saved!
+            <br />
+            <a href="/login" className="text-blue-600 underline">Go to login page</a>
+          </div>
+        )}
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
