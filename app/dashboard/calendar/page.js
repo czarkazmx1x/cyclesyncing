@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import DashboardLayout from '../../../components/DashboardLayout';
+import DayModal from '../../../components/DayModal';
 import { useCycle } from '../../../contexts/CycleContext';
 
 // Force this page to be dynamic
@@ -12,13 +13,17 @@ import {
   FiDroplet,
   FiSun,
   FiStar,
-  FiMoon
+  FiMoon,
+  FiPlus
 } from 'react-icons/fi';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths } from 'date-fns';
 
 export default function Calendar() {
-  const { userProfile, cycleData, symptoms, moods } = useCycle();
+  const { userProfile, cycleData, symptoms, moods, addSymptom, addMood } = useCycle();
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dayNotes, setDayNotes] = useState([]); // Local state for notes
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
@@ -43,8 +48,35 @@ export default function Calendar() {
     const dateStr = format(date, 'yyyy-MM-dd');
     const daySymptoms = symptoms.filter(s => format(new Date(s.date), 'yyyy-MM-dd') === dateStr);
     const dayMoods = moods.filter(m => format(new Date(m.date), 'yyyy-MM-dd') === dateStr);
+    const dayNotesForDate = dayNotes.filter(n => format(new Date(n.date), 'yyyy-MM-dd') === dateStr);
     
-    return { symptoms: daySymptoms, moods: dayMoods };
+    return { symptoms: daySymptoms, moods: dayMoods, notes: dayNotesForDate };
+  };
+
+  // Handle clicking on a day
+  const handleDayClick = (date) => {
+    setSelectedDate(date);
+    setIsModalOpen(true);
+  };
+
+  // Handle adding a note
+  const handleAddNote = (noteData) => {
+    setDayNotes(prev => [...prev, noteData]);
+  };
+
+  // Handle deleting events
+  const handleDeleteEvent = (eventType, index) => {
+    const dateStr = format(selectedDate, 'yyyy-MM-dd');
+    
+    if (eventType === 'note') {
+      setDayNotes(prev => 
+        prev.filter((note, i) => 
+          !(format(new Date(note.date), 'yyyy-MM-dd') === dateStr && i === index)
+        )
+      );
+    }
+    // For symptoms and moods, you'd need to implement delete functions in the context
+    // This is a simplified version
   };
 
   const phaseColors = {
@@ -107,6 +139,17 @@ export default function Calendar() {
               </div>
             </div>
 
+            {/* Quick Actions */}
+            <div className="mb-4 flex items-center justify-between">
+              <p className="text-sm text-gray-600">
+                Click on any day to log symptoms, mood, or notes
+              </p>
+              <div className="flex items-center space-x-2 text-sm text-gray-500">
+                <FiPlus className="w-4 h-4" />
+                <span>Click to add</span>
+              </div>
+            </div>
+
             {/* Calendar Grid */}
             <div className="grid grid-cols-7 gap-1">
               {/* Day headers */}
@@ -131,7 +174,8 @@ export default function Calendar() {
                 return (
                   <div
                     key={day.toString()}
-                    className={`h-24 p-2 border rounded-lg ${
+                    onClick={() => handleDayClick(day)}
+                    className={`h-24 p-2 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
                       isToday ? 'border-primary-500 border-2' : 'border-gray-200'
                     } ${phaseColors[phase]} relative overflow-hidden`}
                   >
@@ -152,6 +196,16 @@ export default function Calendar() {
                       {events.moods.length > 0 && (
                         <div className="text-xs bg-white bg-opacity-70 rounded px-1 py-0.5">
                           Mood: {events.moods[0].mood}
+                        </div>
+                      )}
+                      {events.notes.length > 0 && (
+                        <div className="text-xs bg-white bg-opacity-70 rounded px-1 py-0.5">
+                          📝 {events.notes.length} note{events.notes.length > 1 ? 's' : ''}
+                        </div>
+                      )}
+                      {(events.symptoms.length > 0 || events.moods.length > 0 || events.notes.length > 0) && (
+                        <div className="absolute bottom-1 right-1">
+                          <FiPlus className="w-3 h-3 text-gray-500" />
                         </div>
                       )}
                     </div>
@@ -196,6 +250,19 @@ export default function Calendar() {
             </div>
           </div>
         </div>
+
+        {/* Day Modal */}
+        <DayModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          selectedDate={selectedDate}
+          phase={selectedDate ? getPhaseForDay(selectedDate) : 'follicular'}
+          events={selectedDate ? getDayEvents(selectedDate) : {}}
+          onAddSymptom={addSymptom}
+          onAddMood={addMood}
+          onAddNote={handleAddNote}
+          onDeleteEvent={handleDeleteEvent}
+        />
       </div>
     </DashboardLayout>
   );
