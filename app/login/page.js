@@ -47,6 +47,7 @@ export default function Login() {
         setError(error.message);
       } else {
         // Successfully signed in
+        console.log('Login successful, redirecting to dashboard...');
         router.push('/dashboard');
       }
     } catch (err) {

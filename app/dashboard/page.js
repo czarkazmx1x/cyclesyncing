@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from '../../components/DashboardLayout';
 import SymptomModal from '../../components/SymptomModal';
 import MoodModal from '../../components/MoodModal';
@@ -19,8 +21,28 @@ import {
 
 export default function Dashboard() {
   const { userProfile, cycleData, symptoms, moods } = useCycle();
+  const { user, loading } = useAuth();
+  const router = useRouter();
   const [symptomModalOpen, setSymptomModalOpen] = useState(false);
   const [moodModalOpen, setMoodModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   // Phase information with feminine colors
   const phaseInfo = {
