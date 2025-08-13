@@ -40,12 +40,6 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/login"
-              className="btn btn-primary text-sm"
-            >
-              Get Started
-            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -72,13 +66,6 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/login"
-              className="block text-center btn btn-primary mt-4"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Get Started
-            </Link>
           </div>
         </div>
       )}

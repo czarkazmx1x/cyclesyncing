@@ -20,23 +20,8 @@ import {
 
 export default function DashboardLayout({ children }) {
   const pathname = usePathname();
-  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  
-  // Check authentication
-  useEffect(() => {
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
-    if (!isAuthenticated) {
-      router.push('/login');
-    }
-  }, [router]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('userEmail');
-    router.push('/login');
-  };
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: FiHome, emoji: '🏠' },
@@ -170,13 +155,6 @@ export default function DashboardLayout({ children }) {
                     >
                       Your Profile
                     </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-primary-600 transition-colors duration-300"
-                    >
-                      <FiLogOut className="inline-block w-4 h-4 mr-2" />
-                      Sign out
-                    </button>
                   </div>
                 )}
               </div>
