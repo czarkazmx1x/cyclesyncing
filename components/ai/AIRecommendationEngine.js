@@ -11,32 +11,56 @@ export default function AIRecommendationEngine({ currentPhase, onNewRecommendati
     setIsGenerating(true);
     
     try {
-      // Option 1: Use the API endpoint (for real AI integration)
-      const useAPI = false; // Set to true to use the API endpoint
+      // Option 1: Use your existing Mistral API endpoint 
+      const useMistral = true; // Set to true to use your Mistral API
       
       let recommendation;
       
-      if (useAPI) {
-        const response = await fetch('/api/ai-recommendations', {
+      if (useMistral) {
+        // Use your existing Mistral API
+        const prompt = `You are a women's health and menstrual cycle expert. A woman in her ${phase} phase says: "${input}"
+
+Generate a personalized recommendation in this exact JSON format:
+{
+  "title": "Clear, helpful title",
+  "description": "Brief explanation of why this helps during ${phase} phase",
+  "tips": ["specific actionable tip 1", "specific actionable tip 2", "specific actionable tip 3"],
+  "category": "nutrition|exercise|self-care|productivity",
+  "icon": "relevant emoji"
+}
+
+Focus on evidence-based, practical advice that addresses their specific concerns during the ${phase} phase.`;
+
+        const response = await fetch('/api/ai', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            userInput: input,
-            currentPhase: phase,
-            userHistory: recentInputs.slice(0, 5) // Send recent context
+            prompt: prompt,
+            model: 'mistral-small',
+            temperature: 0.7,
+            max_tokens: 400
           }),
         });
         
         if (!response.ok) {
-          throw new Error('Failed to get AI recommendation');
+          throw new Error('Failed to get Mistral AI recommendation');
         }
         
         const data = await response.json();
-        recommendation = data.recommendation;
+        const aiResponse = JSON.parse(data.content);
+        
+        recommendation = {
+          ...aiResponse,
+          timestamp: new Date(),
+          confidence: calculateConfidence(input),
+          aiGenerated: true,
+          userInput: input,
+          phase: phase
+        };
       } else {
-        // Option 2: Use local mock (current implementation)
+        // Fallback to local mock
         recommendation = await mockAIRecommendation(input, phase);
       }
       
@@ -57,13 +81,34 @@ export default function AIRecommendationEngine({ currentPhase, onNewRecommendati
       setUserInput('');
     } catch (error) {
       console.error('Error generating AI recommendation:', error);
-      // Could show user-friendly error message here
+      // Fallback to mock on error
+      try {
+        const recommendation = await mockAIRecommendation(input, phase);
+        onNewRecommendation(recommendation);
+        setUserInput('');
+      } catch (fallbackError) {
+        console.error('Fallback also failed:', fallbackError);
+      }
     } finally {
       setIsGenerating(false);
     }
   };
 
-  // Mock AI function - replace with real AI integration
+  // Calculate confidence based on input quality
+  const calculateConfidence = (input) => {
+    const wordCount = input.split(' ').length;
+    const hasSpecificSymptoms = /(pain|cramp|tired|mood|craving|bloated|energy)/i.test(input);
+    
+    let confidence = 0.7; // Base confidence for Mistral AI
+    
+    if (wordCount > 10) confidence += 0.15; // More detailed input
+    if (hasSpecificSymptoms) confidence += 0.1; // Specific symptoms mentioned
+    if (wordCount > 20) confidence += 0.05; // Very detailed
+    
+    return Math.min(confidence, 0.95); // Cap at 95%
+  };
+
+  // Mock AI function - fallback when Mistral fails
   const mockAIRecommendation = async (input, phase) => {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 2000));
