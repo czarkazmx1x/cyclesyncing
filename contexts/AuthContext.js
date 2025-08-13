@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
 import { useRouter } from 'next/navigation';
 
 const AuthContext = createContext({});
@@ -14,35 +13,51 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
+  const [supabase, setSupabase] = useState(null);
   const router = useRouter();
 
+  // Initialize Supabase client
   useEffect(() => {
-    // Check active sessions and sets the user
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      }
-      setLoading(false);
-    });
+    const initializeSupabase = async () => {
+      try {
+        const { createClient } = await import('../lib/supabase');
+        const client = createClient();
+        setSupabase(client);
+        
+        // Check active sessions and sets the user
+        const { data: { session } } = await client.auth.getSession();
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          fetchProfile(session.user.id, client);
+        }
+        setLoading(false);
 
-    // Listen for changes on auth state (login, logout, etc.)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      } else {
-        setProfile(null);
-      }
-    });
+        // Listen for changes on auth state (login, logout, etc.)
+        const { data: { subscription } } = client.auth.onAuthStateChange((_event, session) => {
+          setUser(session?.user ?? null);
+          if (session?.user) {
+            fetchProfile(session.user.id, client);
+          } else {
+            setProfile(null);
+          }
+        });
 
-    return () => subscription.unsubscribe();
+        return () => subscription.unsubscribe();
+      } catch (error) {
+        console.error('Failed to initialize Supabase:', error);
+        setLoading(false);
+      }
+    };
+
+    initializeSupabase();
   }, []);
 
   // Fetch user profile
-  const fetchProfile = async (userId) => {
+  const fetchProfile = async (userId, client = supabase) => {
+    if (!client) return;
+    
     try {
-      const { data, error } = await supabase
+      const { data, error } = await client
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
@@ -50,7 +65,7 @@ export function AuthProvider({ children }) {
 
       if (error && error.code === 'PGRST116') {
         // Profile doesn't exist, create one
-        const { data: newProfile, error: createError } = await supabase
+        const { data: newProfile, error: createError } = await client
           .from('profiles')
           .insert({
             user_id: userId,
@@ -73,6 +88,8 @@ export function AuthProvider({ children }) {
 
   // Sign up
   const signUp = async (email, password, name) => {
+    if (!supabase) return { data: null, error: { message: 'Supabase not initialized' } };
+    
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -92,6 +109,8 @@ export function AuthProvider({ children }) {
 
   // Sign in
   const signIn = async (email, password) => {
+    if (!supabase) return { data: null, error: { message: 'Supabase not initialized' } };
+    
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -108,6 +127,8 @@ export function AuthProvider({ children }) {
 
   // Sign out
   const signOut = async () => {
+    if (!supabase) return;
+    
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
@@ -119,6 +140,8 @@ export function AuthProvider({ children }) {
 
   // Update profile
   const updateProfile = async (updates) => {
+    if (!supabase) return { data: null, error: { message: 'Supabase not initialized' } };
+    
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -142,7 +165,8 @@ export function AuthProvider({ children }) {
     signUp,
     signIn,
     signOut,
-    updateProfile
+    updateProfile,
+    supabase
   };
 
   return (
