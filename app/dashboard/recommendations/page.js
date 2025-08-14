@@ -3,18 +3,43 @@
 import { useState } from 'react';
 import DashboardLayout from '../../../components/DashboardLayout';
 import { useCycle } from '../../../contexts/CycleContext';
+import AIRecommendationEngine from '../../../components/ai/AIRecommendationEngine';
+import AIRecommendationCard from '../../../components/ai/AIRecommendationCard';
+import MonthlyDataSummary from '../../../components/MonthlyDataSummary';
 import { 
   FiActivity, 
   FiHeart,
   FiSun,
   FiMoon,
   FiBook,
-  FiShoppingBag
+  FiShoppingBag,
+  FiStar
 } from 'react-icons/fi';
 
 export default function Recommendations() {
-  const { cycleData } = useCycle();
+  const { cycleData, symptoms, moods } = useCycle();
   const [activeCategory, setActiveCategory] = useState('all');
+  const [aiRecommendations, setAiRecommendations] = useState([]);
+  const [savedRecommendations, setSavedRecommendations] = useState([]);
+  const [dayNotes, setDayNotes] = useState([]); // Would come from context in real app
+
+  // Handle new AI recommendation
+  const handleNewAIRecommendation = (recommendation) => {
+    setAiRecommendations(prev => [recommendation, ...prev]);
+  };
+
+  // Handle saving AI recommendation
+  const handleSaveAIRecommendation = (recommendation) => {
+    setSavedRecommendations(prev => [recommendation, ...prev]);
+    // You could also save this to a database here
+  };
+
+  // Handle dismissing AI recommendation
+  const handleDismissAIRecommendation = (recommendation) => {
+    setAiRecommendations(prev => 
+      prev.filter(rec => rec.timestamp !== recommendation.timestamp)
+    );
+  };
 
   const categories = [
     { id: 'all', name: 'All', icon: null },
@@ -182,6 +207,49 @@ export default function Recommendations() {
               Personalized Recommendations
             </h1>
             <p className="text-gray-600">Based on your {cycleData.currentPhase} phase</p>
+          </div>
+
+          {/* Monthly Data Summary */}
+          <MonthlyDataSummary
+            symptoms={symptoms || []}
+            moods={moods || []}
+            notes={dayNotes}
+            currentMonth={new Date()}
+            aiRecommendations={aiRecommendations}
+          />
+
+          {/* AI Recommendation Engine */}
+          <AIRecommendationEngine 
+            currentPhase={cycleData.currentPhase}
+            onNewRecommendation={handleNewAIRecommendation}
+          />
+
+          {/* AI Recommendations Section */}
+          {aiRecommendations.length > 0 && (
+            <div className="mb-8">
+              <div className="flex items-center space-x-2 mb-4">
+                <FiStar className="text-purple-600" />
+                <h2 className="text-xl font-semibold text-gray-900">Your AI Recommendations</h2>
+                <span className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full">
+                  {aiRecommendations.length} new
+                </span>
+              </div>
+              <div className="space-y-4">
+                {aiRecommendations.map((recommendation, index) => (
+                  <AIRecommendationCard
+                    key={`${recommendation.timestamp}-${index}`}
+                    recommendation={recommendation}
+                    onSave={handleSaveAIRecommendation}
+                    onDismiss={handleDismissAIRecommendation}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Static Recommendations Section */}
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">General Phase Recommendations</h2>
           </div>
 
           {/* Category Filter */}

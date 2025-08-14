@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from '../contexts/AuthContext';
 import { 
   FiHome, 
   FiCalendar, 
@@ -22,6 +23,7 @@ export default function DashboardLayout({ children }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const { signOut, user } = useAuth();
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: FiHome, emoji: '🏠' },
@@ -155,6 +157,16 @@ export default function DashboardLayout({ children }) {
                     >
                       Your Profile
                     </Link>
+                    <button
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        signOut();
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-primary-600 transition-colors duration-300"
+                    >
+                      <FiLogOut className="inline mr-2 h-4 w-4" />
+                      Sign out
+                    </button>
                   </div>
                 )}
               </div>
