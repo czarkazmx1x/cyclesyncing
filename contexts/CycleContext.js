@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { calculateCycleInfo } from '../lib/cycleCalculations';
 
 const CycleContext = createContext();
 
@@ -19,7 +20,8 @@ export function CycleProvider({ children }) {
     nextPeriodDate: null,
     fertileWindowStart: null,
     fertileWindowEnd: null,
-    ovulationDate: null
+    ovulationDate: null,
+    daysUntilNextPeriod: null
   });
 
   // Symptoms and Mood Tracking
@@ -27,50 +29,12 @@ export function CycleProvider({ children }) {
   const [moods, setMoods] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Calculate cycle information
-  const calculateCycleInfo = () => {
-    if (!profile?.last_period_start) return;
+  // Calculate cycle information using the utility function
+  const updateCycleInfo = () => {
+    if (!profile) return;
     
-    const lastPeriod = new Date(profile.last_period_start);
-    const today = new Date();
-    const daysSinceLastPeriod = Math.floor((today - lastPeriod) / (1000 * 60 * 60 * 24));
-    
-    let currentDay = (daysSinceLastPeriod % profile.cycle_length) + 1;
-    let phase = 'menstrual';
-    
-    if (currentDay <= profile.period_length) {
-      phase = 'menstrual';
-    } else if (currentDay <= profile.cycle_length * 0.5) {
-      phase = 'follicular';
-    } else if (currentDay <= profile.cycle_length * 0.6) {
-      phase = 'ovulatory';
-    } else {
-      phase = 'luteal';
-    }
-
-    // Calculate next period
-    const nextPeriod = new Date(lastPeriod);
-    nextPeriod.setDate(nextPeriod.getDate() + profile.cycle_length);
-
-    // Calculate fertile window
-    const fertileStart = new Date(lastPeriod);
-    fertileStart.setDate(fertileStart.getDate() + 10);
-    
-    const fertileEnd = new Date(lastPeriod);
-    fertileEnd.setDate(fertileEnd.getDate() + 17);
-
-    // Calculate ovulation
-    const ovulation = new Date(lastPeriod);
-    ovulation.setDate(ovulation.getDate() + 14);
-
-    setCycleData({
-      currentDay,
-      currentPhase: phase,
-      nextPeriodDate: nextPeriod,
-      fertileWindowStart: fertileStart,
-      fertileWindowEnd: fertileEnd,
-      ovulationDate: ovulation
-    });
+    const cycleInfo = calculateCycleInfo(profile);
+    setCycleData(cycleInfo);
   };
 
   // Fetch symptoms from Supabase
@@ -126,7 +90,7 @@ export function CycleProvider({ children }) {
   // Update cycle info when profile changes
   useEffect(() => {
     if (profile) {
-      calculateCycleInfo();
+      updateCycleInfo();
     }
   }, [profile]);
 
@@ -261,7 +225,7 @@ export function CycleProvider({ children }) {
     logMood,
     deleteSymptom,
     deleteMood,
-    calculateCycleInfo
+    calculateCycleInfo: updateCycleInfo
   };
 
   return (

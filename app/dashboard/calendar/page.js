@@ -5,6 +5,7 @@ import DashboardLayout from '../../../components/DashboardLayout';
 import DayModal from '../../../components/DayModal';
 import DataDebugPanel from '../../../components/DataDebugPanel';
 import { useCycle } from '../../../contexts/CycleContext';
+import { getPhaseForDay, isPeriodDay, isOvulationDay, isFertileDay } from '../../../lib/cycleCalculations';
 
 // Force this page to be dynamic
 export const dynamic = 'force-dynamic';
@@ -30,18 +31,9 @@ export default function Calendar() {
   const monthEnd = endOfMonth(currentMonth);
   const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
-  // Calculate phase for any given day
-  const getPhaseForDay = (date) => {
-    if (!userProfile?.lastPeriodStart) return 'follicular'; // Default phase
-    
-    const lastPeriod = new Date(userProfile.lastPeriodStart);
-    const daysSinceLastPeriod = Math.floor((date - lastPeriod) / (1000 * 60 * 60 * 24));
-    const cycleDay = (daysSinceLastPeriod % (userProfile.cycleLength || 28)) + 1;
-
-    if (cycleDay <= (userProfile.periodLength || 5)) return 'menstrual';
-    if (cycleDay <= (userProfile.cycleLength || 28) * 0.5) return 'follicular';
-    if (cycleDay <= (userProfile.cycleLength || 28) * 0.6) return 'ovulatory';
-    return 'luteal';
+  // Calculate phase for any given day using the utility function
+  const getPhaseForDayCalendar = (date) => {
+    return getPhaseForDay(date, userProfile);
   };
 
   // Get events for a specific day
@@ -193,10 +185,23 @@ export default function Calendar() {
 
               {/* Calendar days */}
               {monthDays.map(day => {
-                const phase = getPhaseForDay(day);
+                const phase = getPhaseForDayCalendar(day);
                 const PhaseIcon = phaseIcons[phase];
                 const events = getDayEvents(day);
                 const isToday = isSameDay(day, new Date());
+                const isPeriod = isPeriodDay(day, userProfile);
+                const isOvulation = isOvulationDay(day, userProfile);
+                const isFertile = isFertileDay(day, userProfile);
+
+                // Enhanced styling based on special days
+                let specialDayClass = '';
+                if (isPeriod) {
+                  specialDayClass = 'ring-2 ring-red-400';
+                } else if (isOvulation) {
+                  specialDayClass = 'ring-2 ring-yellow-400';
+                } else if (isFertile) {
+                  specialDayClass = 'ring-1 ring-yellow-200';
+                }
 
                 return (
                   <div
@@ -204,7 +209,7 @@ export default function Calendar() {
                     onClick={() => handleDayClick(day)}
                     className={`h-24 p-2 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
                       isToday ? 'border-primary-500 border-2' : 'border-gray-200'
-                    } ${phaseColors[phase]} relative overflow-hidden`}
+                    } ${phaseColors[phase]} ${specialDayClass} relative overflow-hidden`}
                   >
                     <div className="flex justify-between items-start">
                       <span className={`text-sm font-medium ${isToday ? 'text-primary-700' : ''}`}>
@@ -257,7 +262,7 @@ export default function Calendar() {
                   </div>
                 </div>
                 <span className="text-sm text-gray-500">
-                  In {Math.ceil((new Date(cycleData.nextPeriodDate) - new Date()) / (1000 * 60 * 60 * 24))} days
+                  In {cycleData.daysUntilNextPeriod || 0} days
                 </span>
               </div>
 
@@ -283,7 +288,7 @@ export default function Calendar() {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           selectedDate={selectedDate}
-          phase={selectedDate ? getPhaseForDay(selectedDate) : 'follicular'}
+          phase={selectedDate ? getPhaseForDayCalendar(selectedDate) : 'follicular'}
           events={selectedDate ? getDayEvents(selectedDate) : {}}
           onAddSymptom={handleAddSymptom}
           onAddMood={handleAddMood}

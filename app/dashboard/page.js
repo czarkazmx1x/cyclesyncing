@@ -68,10 +68,8 @@ export default function Dashboard() {
 
   const currentPhaseData = phaseInfo[cycleData.currentPhase];
 
-  // Calculate days until next period
-  const daysUntilPeriod = cycleData.nextPeriodDate 
-    ? Math.ceil((new Date(cycleData.nextPeriodDate) - new Date()) / (1000 * 60 * 60 * 24))
-    : userProfile?.cycleLength ? userProfile.cycleLength - cycleData.currentDay : 28 - cycleData.currentDay;
+  // Calculate days until next period using the improved logic
+  const daysUntilPeriod = cycleData.daysUntilNextPeriod || 0;
 
   // Quick actions with gradient colors
   const quickActions = [
