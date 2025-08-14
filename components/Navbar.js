@@ -25,7 +25,7 @@ export default function Navbar() {
               <FiHeart className="h-5 w-5 text-white" />
             </div>
             <span className="font-display text-2xl font-bold gradient-text">
-              CycleSync
+              myCycle Sync
             </span>
           </Link>
 

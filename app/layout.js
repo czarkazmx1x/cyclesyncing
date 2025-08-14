@@ -2,7 +2,7 @@ import '../styles/globals.css';
 import ClientProviders from '../components/ClientProviders';
 
 export const metadata = {
-  title: 'CycleSync - Track Your Natural Rhythm',
+  title: 'myCycle Sync - Track Your Natural Rhythm',
   description: 'Personalized wellness recommendations based on your menstrual cycle',
 }
 

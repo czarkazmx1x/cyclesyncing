@@ -1,4 +1,4 @@
-# CycleSync - Women's Health Tracking App
+# myCycle Sync - Women's Health Tracking App
 
 A comprehensive web application for women's health and cycle tracking.
 
